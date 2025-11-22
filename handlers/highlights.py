@@ -5,6 +5,7 @@ from igapi.private_api import private
 from utils.backend_api import check_limit   # ❗ Artık backend'e HTTP çağrısı
 from utils.helpers import story_time_ago
 from utils.limit_message import limit_exceeded_keyboard
+from utils.backend_api import get_user_data
 
 
 async def handle_highlights(update, context):
@@ -26,14 +27,20 @@ async def handle_highlights(update, context):
         _, user_id, username = data.split(":")
         user_id = int(user_id)
 
-        context.user_data["last_username"] = username  # kaydet
+        context.user_data["last_username"] = username  # Kaydet
 
+        telegram_id = query.from_user.id
+
+        user_info = await get_user_data(telegram_id)
+        is_premium = user_info.get("is_premium", 0) == 1
+
+        # ✔ Limit kontrolü
         limit = await check_limit(telegram_id)
         if not limit.get("allowed"):
             text, markup = limit_exceeded_keyboard()
             await query.message.reply_text(text, reply_markup=markup, parse_mode="Markdown")
             return
-        
+
         trays = private.user_highlights_full(user_id)
         if not trays:
             await query.message.reply_text("📭 Öne çıkan klasör yok.")
@@ -43,7 +50,7 @@ async def handle_highlights(update, context):
 
         for tray in trays:
             title = tray.get("title", "İsimsiz")
-            hid = tray["id"].replace(":", "-")
+            hid = tray["id"].replace(":", "-")  # callback_data için
 
             items = private.highlight_items(tray["id"])
             count = len(items)
@@ -51,16 +58,27 @@ async def handle_highlights(update, context):
             if len(title) > 20:
                 title = title[:20] + "…"
 
-            text = f"📁 {title} ({count})"
+            # Premium kullanıcıya özel buton
+            if is_premium:
+                all_text = "<-- Hepsini göster ⭐ "
+            else:
+                all_text = "<-- Hepsi göster ⚡–1 "
 
+            # Klasör + Hepsi butonu yan yana
             keyboard.append([
                 InlineKeyboardButton(
-                    text,
+                    f"📁 {title} ({count})",
                     callback_data=f"highlight_open:{hid}:{user_id}"
+                ),
+                InlineKeyboardButton(
+                    all_text,
+                    callback_data=f"highlight_all:{hid}:{user_id}"
                 )
             ])
 
-        keyboard.append([InlineKeyboardButton("⬅ Ana Menü", callback_data="back_menu")])
+        keyboard.append([
+            InlineKeyboardButton("⬅ Ana Menü", callback_data="back_menu")
+        ])
 
         await query.message.reply_text(
             "📁 *Öne çıkanlar*",
@@ -68,7 +86,6 @@ async def handle_highlights(update, context):
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
         return
-
 
 
     # -------------------------------------------------------
@@ -81,7 +98,6 @@ async def handle_highlights(update, context):
         username = context.user_data.get("last_username")
 
         # ⭐ PREMIUM bilgisi backend'ten çekilsin
-        from utils.backend_api import get_user_data
         user_info = await get_user_data(telegram_id)
         is_premium = user_info.get("is_premium", 0) == 1
 

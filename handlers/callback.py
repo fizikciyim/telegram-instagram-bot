@@ -8,7 +8,8 @@ from handlers.highlights import handle_highlights
 from handlers.profile import handle_profile
 from handlers.history import handle_history
 from handlers.start import send_main_menu
-
+from handlers.buy import handle_buy
+from handlers.premium_info import handle_premium_info
 
 async def callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -52,6 +53,12 @@ async def callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return await send_main_menu(query.message, context, username)
 
     if data.startswith("buy:"):
+        return await handle_buy(update, context)
+    
+
+    if data == "premium_open":
+        query = update.callback_query
+        await query.answer()
         return await handle_buy(update, context)
 
     # Default (tanınamayan callback)

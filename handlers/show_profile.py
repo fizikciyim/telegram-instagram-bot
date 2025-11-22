@@ -108,27 +108,50 @@ async def show_profile(message, context, username):
         btn_posts = "Gönderiler ⭐"
         btn_reels = "Reels ⭐"
         btn_highlights = "Öne Çıkanlar ⭐"
+
+        keyboard = [
+            [
+                InlineKeyboardButton(btn_story, callback_data=f"stories:{user_id}:{username}"),
+                InlineKeyboardButton(btn_posts, callback_data=f"posts:{user_id}:{username}")
+            ],
+            [
+                InlineKeyboardButton(btn_reels, callback_data=f"reels:{user_id}:{username}"),
+                InlineKeyboardButton(btn_highlights, callback_data=f"highlights:{user_id}:{username}")
+            ],
+            [
+                InlineKeyboardButton("🔍 Son Aramalar", callback_data="history_menu"),
+                InlineKeyboardButton("⚙ Ayarlar", callback_data="settings")
+            ],
+            [
+    InlineKeyboardButton("👨‍💻 Destek", url="https://t.me/YOUR_USERNAME")
+],
+        ]
     else:
-        # ⚡ NORMAL buton seti
+        # ⚡ NORMAL BUTON SETİ + PREMIUM SATIN ALMA MENÜSÜ
         btn_story = "Hikayeler ⚡–1"
         btn_posts = "Gönderiler ⚡–1"
         btn_reels = "Reels ⚡–1"
         btn_highlights = "Öne Çıkanlar ⚡–1"
 
-    keyboard = [
-        [
-            InlineKeyboardButton(btn_story, callback_data=f"stories:{user_id}:{username}"),
-            InlineKeyboardButton(btn_posts, callback_data=f"posts:{user_id}:{username}")
-        ],
-        [
-            InlineKeyboardButton(btn_reels, callback_data=f"reels:{user_id}:{username}"),
-            InlineKeyboardButton(btn_highlights, callback_data=f"highlights:{user_id}:{username}")
-        ],
-        [
-            InlineKeyboardButton("🔍 Son Aramalar", callback_data="history_menu"),
-            InlineKeyboardButton("⚙ Ayarlar", callback_data="settings")
+        keyboard = [
+            [
+                InlineKeyboardButton(btn_story, callback_data=f"stories:{user_id}:{username}"),
+                InlineKeyboardButton(btn_posts, callback_data=f"posts:{user_id}:{username}")
+            ],
+            [
+                InlineKeyboardButton(btn_reels, callback_data=f"reels:{user_id}:{username}"),
+                InlineKeyboardButton(btn_highlights, callback_data=f"highlights:{user_id}:{username}")
+            ],
+            [
+                InlineKeyboardButton("🔍 Son Aramalar", callback_data="history_menu"),
+                InlineKeyboardButton("⚙ Ayarlar", callback_data="settings")
+            ],
+            [
+                InlineKeyboardButton("⭐ Premium Satın Al", callback_data="buy:menu"),
+                InlineKeyboardButton("👨‍💻 Destek", url="https://t.me/fizikciyim34")
+
+            ]
         ]
-    ]
 
     await message.reply_text(
         text + "\n\nNe yapmak istersin?",

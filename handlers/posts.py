@@ -4,6 +4,8 @@ from utils.backend_api import check_limit  # ⬅️ backend.services.limits yeri
 import asyncio
 from utils.helpers import format_date
 from utils.limit_message import limit_exceeded_keyboard
+import httpx
+from config import BACKEND_URL
 
 async def handle_posts(update, context):
     query = update.callback_query
@@ -138,7 +140,7 @@ async def handle_posts(update, context):
     # TOPLU İNDİRME → 1 HAK
     # -------------------------------------------------------
     if data == "posts_download_batch":
-        # ✅ Burada da limit kontrolü backend üzerinden
+        # ✅ Limit kontrolü
         limit = await check_limit(telegram_id)
         if not limit.get("allowed", False):
             reason = limit.get("reason")
@@ -174,18 +176,34 @@ async def handle_posts(update, context):
                 else:
                     all_media.append(InputMediaPhoto(url))
 
-        CHUNK = 10
+        # 🔥 Çok büyük batch'lerde Telegram boğulmasın
+        MAX_MEDIA = 50
+        if len(all_media) > MAX_MEDIA:
+            all_media = all_media[:MAX_MEDIA]
+
+        CHUNK = 5
         total = len(all_media)
+
+        sent = 0
 
         for i in range(0, total, CHUNK):
             group = all_media[i:i+CHUNK]
-            await query.message.reply_media_group(group)
+            try:
+                await query.message.reply_media_group(group)
+                sent += len(group)
+            except TimedOut:
+                await query.message.reply_text(
+                    "⚠ Telegram bağlantısı zaman aşımına uğradı.\n\n"
+                    "Bazı gönderiler gönderilememiş olabilir. Daha az içerik ile tekrar dene."
+                )
+                break
+
             await asyncio.sleep(1)
 
         await query.message.reply_text(
-            f"✔ Tüm içerikler gönderildi!\n\n"
+            f"✔ İçerik gönderimi tamamlandı.\n\n"
             f"• İşlenen gönderi sayısı: {len(batch)}\n"
-            f"• Toplam medya: {total}"
+            f"• Telegram'a gönderilen medya: {sent}"
         )
 
         return await send_post_page(query.message, context)
@@ -204,6 +222,14 @@ async def send_post_page(message, context):
     items = posts[start:end]
     if not items:
         return await message.reply_text("İçerik yok.")
+
+    # 🔥 Premium kontrolü artık sadece buradan geliyor
+    is_premium = context.user_data.get("is_premium", False)
+
+    if is_premium:
+        download_label = f"📥 Bu Sayfadaki {len(items)} Gönderiyi İndir ⭐"
+    else:
+        download_label = f"📥 Bu Sayfadaki {len(items)} Gönderiyi İndir ⚡–1"
 
     keyboard = []
     row = []
@@ -225,7 +251,7 @@ async def send_post_page(message, context):
     keyboard.append(nav)
 
     keyboard.append(
-        [InlineKeyboardButton(f"📥 Bu Sayfadaki {len(items)} Gönderiyi İndir", callback_data="posts_download_batch")]
+        [InlineKeyboardButton(download_label, callback_data="posts_download_batch")]
     )
 
     keyboard.append([InlineKeyboardButton("⬅ Ana Menü", callback_data="back_menu")])
