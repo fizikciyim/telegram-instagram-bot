@@ -9,9 +9,8 @@ async def handle_buy(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     choice = query.data.split(":")[1]
 
-    telegram_id = query.from_user.id  # Kullanıcının UID'si
+    telegram_id = query.from_user.id 
 
-    # --- 1 GÜN ---
     if choice == "1day":
         link = "https://www.shopier.com/igviewer/41409641"
 
@@ -30,8 +29,6 @@ async def handle_buy(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         await query.message.reply_text(text, parse_mode=ParseMode.MARKDOWN)
         return
-
-    # --- 30 GÜN ---
     if choice == "30day":
         link = "https://www.shopier.com/igviewer/41409673"
 
@@ -50,7 +47,6 @@ async def handle_buy(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.message.reply_text(text, parse_mode=ParseMode.MARKDOWN)
         return
 
-    # --- MENÜ ---
     if choice == "menu":
         keyboard = [
             [InlineKeyboardButton("⭐ 1 Gün – 20 TL", callback_data="buy:1day")],

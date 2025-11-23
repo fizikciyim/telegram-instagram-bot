@@ -5,13 +5,11 @@ from mysql.connector import Error
 from datetime import datetime, timedelta
 
 
-# Premium ekle veya uzat
 def add_premium(user_id: int, days: int):
     try:
         conn = get_connection()
         cursor = conn.cursor()
 
-        # Premium zaten varsa üzerine ekleyelim
         cursor.execute("""
             UPDATE users
             SET is_premium = 1,
@@ -35,7 +33,6 @@ def add_premium(user_id: int, days: int):
         return False
 
 
-# Premium kontrol et
 def is_premium(user_id: int):
     try:
         conn = get_connection()
@@ -54,7 +51,6 @@ def is_premium(user_id: int):
         if not user:
             return False
 
-        # Premium tarihi dolmuş mu?
         if user["premium_until"] and user["premium_until"] > datetime.now():
             return True
         return False

@@ -9,7 +9,6 @@ def download_url(url, filename):
     os.makedirs("downloads", exist_ok=True)
     path = f"downloads/{filename}"
 
-    # Eğer dosya daha önce indiyse → tekrar indirme
     if os.path.exists(path):
         return path
 
@@ -28,13 +27,11 @@ def download_url(url, filename):
 def download_story(user_id):
     """Hikayeleri indirir (cache + dosya cache destekli)"""
 
-    # 1) Bellek cache kontrolü
     cache_key = f"story_files:{user_id}"
     cached = get_cache(cache_key)
     if cached:
-        return cached   # ✔ Dosyalar zaten indirilmiş
+        return cached   
 
-    # 2) API’den hikayeleri çek
     items = private.user_stories(user_id)
     if not items:
         return []
@@ -43,12 +40,10 @@ def download_story(user_id):
 
     for item in items:
 
-        # Fotoğraf
         if item.get("media_type") == 1:
             media_url = item["image_versions2"]["candidates"][0]["url"]
             ext = "jpg"
 
-        # Video
         elif item.get("media_type") == 2:
             media_url = item["video_versions"][0]["url"]
             ext = "mp4"
@@ -60,7 +55,6 @@ def download_story(user_id):
         path = download_url(media_url, filename)
         result.append(path)
 
-    # 3) Belleğe kaydet (60 saniye)
     set_cache(cache_key, result)
 
     return result
@@ -129,12 +123,10 @@ def download_single_story(story_id):
     except:
         return None
 
-    # Fotoğraf
     if item.get("media_type") == 1:
         media_url = item["image_versions2"]["candidates"][0]["url"]
         ext = "jpg"
 
-    # Video
     elif item.get("media_type") == 2:
         media_url = item["video_versions"][0]["url"]
         ext = "mp4"

@@ -4,9 +4,6 @@ from db import get_connection
 from mysql.connector import Error
 
 
-# -----------------------------
-# Kullanıcı ekle veya güncelle
-# -----------------------------
 def upsert_user(user_id: int, username: str):
     try:
         conn = get_connection()
@@ -30,9 +27,6 @@ def upsert_user(user_id: int, username: str):
         return False
 
 
-# -----------------------------
-# Kullanıcı getir
-# -----------------------------
 def get_user(user_id: int):
     try:
         conn = get_connection()

@@ -1,11 +1,9 @@
-# backend/db.py
 
 import mysql.connector
 from mysql.connector import Error
 from dotenv import load_dotenv
 import os
 
-# .env dosyasını yükle
 load_dotenv()
 
 DB_HOST = os.getenv("DB_HOST")
@@ -14,9 +12,6 @@ DB_PASS = os.getenv("DB_PASS")
 DB_NAME = os.getenv("DB_NAME")
 
 
-# -----------------------
-#  MySQL bağlantısı
-# -----------------------
 def get_connection():
     return mysql.connector.connect(
         host=DB_HOST,
@@ -28,12 +23,8 @@ def get_connection():
 def get_db():
     return get_connection()
 
-# -----------------------
-#  Veritabanı oluşturma
-# -----------------------
 def create_database():
     try:
-        # database=DB_NAME yazmıyoruz çünkü DB yok
         conn = mysql.connector.connect(
             host=DB_HOST,
             user=DB_USER,
@@ -51,23 +42,24 @@ def create_database():
         print("❌ DB Hatası:", e)
 
 
-# -----------------------
-#  Tabloları oluşturma
-# -----------------------
 def create_tables():
     try:
         conn = get_connection()
         cursor = conn.cursor()
 
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                id BIGINT PRIMARY KEY,
-                username VARCHAR(255),
-                is_premium BOOLEAN DEFAULT 0,
-                premium_until DATETIME NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
+        CREATE TABLE IF NOT EXISTS users (
+            id BIGINT PRIMARY KEY,
+            username VARCHAR(255),
+            is_premium TINYINT(1) DEFAULT 0,
+            premium_until DATETIME NULL,
+            used_today INT DEFAULT 0,
+            daily_limit INT DEFAULT 10,
+            last_reset DATE DEFAULT (CURDATE()),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS logs (

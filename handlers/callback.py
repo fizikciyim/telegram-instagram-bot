@@ -30,7 +30,6 @@ async def callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return await handle_reels(update, context)
 
     # HIGHLIGHTS
-    # HIGHLIGHTS
     if (
         data.startswith("highlights:")
         or data.startswith("highlight_open:")
@@ -43,7 +42,6 @@ async def callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if data in ["history_menu", "clear_history"]:
         return await handle_history(update, context)
 
-    # PROFILE OPEN (profile_open:username)
     if data.startswith("profile_open:"):
         return await handle_profile(update, context)
 

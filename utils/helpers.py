@@ -3,9 +3,6 @@
 from datetime import datetime
 from telegram import Message
 
-# ===========================
-# TARİH FORMATLAMA
-# ===========================
 def format_date(ts):
     return datetime.fromtimestamp(ts).strftime("%d.%m.%Y %H:%M")
 
@@ -28,9 +25,6 @@ def story_time_ago(item):
     return f"{int(sec//86400)} gün önce"
 
 
-# ===========================
-# GÜVENLİ FOTOĞRAF GÖNDERME
-# ===========================
 async def send_photo_safely(message: Message, url: str, caption: str = None):
     try:
         await message.reply_photo(photo=url, caption=caption)
@@ -42,9 +36,6 @@ async def send_photo_safely(message: Message, url: str, caption: str = None):
             await message.reply_text("⚠️ Fotoğraf gönderilemedi.")
 
 
-# ===========================
-# GÜVENLİ VİDEO GÖNDERME
-# ===========================
 async def send_video_safely(message: Message, url: str, caption: str = None):
     try:
         await message.reply_video(video=url, caption=caption)

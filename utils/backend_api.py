@@ -9,7 +9,6 @@ async def check_limit(telegram_id):
         )
         return resp.json()
     
-# Kullanıcı verilerini (ve PREMIUM durumunu) çekme
 async def get_user_data(telegram_id):
     async with httpx.AsyncClient() as client:
         resp = await client.get(f"{BACKEND_URL}/user/{telegram_id}")

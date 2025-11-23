@@ -25,9 +25,6 @@ class PrivateAPI:
 
         print("Instagram Cookie Login → Başarılı!")
 
-    # -------------------------------
-    # 🔥 KULLANICI BİLGİSİ ÇEKME
-    # -------------------------------
     def user_info_by_username(self, username: str):
         key = f"profile:{username}"
 
@@ -44,15 +41,12 @@ class PrivateAPI:
         try:
             data = res.json()["data"]["user"]
 
-            set_cache(key, data)  # ✔ cache kaydet
+            set_cache(key, data)  
             return data
 
         except:
             return None
 
-    # -------------------------------
-    # 🔥 STORY ÇEKME
-    # -------------------------------
     def user_stories(self, user_id: int):
         key = f"stories:{user_id}"
 
@@ -68,7 +62,6 @@ class PrivateAPI:
 
         data = res.json()
 
-        # ❗ Buradaki kontroller kritik
         if not data:
             return []
 
@@ -83,9 +76,6 @@ class PrivateAPI:
         set_cache(key, items)
         return items
 
-    # -------------------------------
-    # 🔥 HIGHLIGHTS
-    # -------------------------------
     def user_highlights(self, user_id: int):
         url = f"https://i.instagram.com/api/v1/highlights/{user_id}/highlights_tray/"
         res = self.session.get(url)
@@ -105,9 +95,6 @@ class PrivateAPI:
         reels = res.json().get("reels", {})
         return reels.get(str(hid), {}).get("items", [])
 
-    # -------------------------------
-    # 🔥 POSTLAR
-    # -------------------------------
     def user_posts(self, user_id, max_id=None, amount=10):
         # max_id None ise boş string yapalım → split hatası çıkmaz
         key_max = max_id if max_id is not None else "start"
@@ -116,8 +103,6 @@ class PrivateAPI:
         cached = get_cache(key)
         if cached:
             return cached
-
-        # API URL
         url = f"https://i.instagram.com/api/v1/feed/user/{user_id}/"
         if max_id:
             url += f"?max_id={max_id}"
@@ -131,7 +116,6 @@ class PrivateAPI:
         items = data.get("items", [])
         next_max_id = data.get("next_max_id")
 
-        # IG zaten 10-12 dönüyor → amount = gösterilecek sayı
         items = items[:amount]
 
         result = {
@@ -139,15 +123,11 @@ class PrivateAPI:
             "next": next_max_id
         }
 
-        # 5 dakika cache (pagination için ideal)
         set_cache(key, result, ttl=300)
 
         return result
 
 
-    # -------------------------------
-    # 🔥 REELS
-    # -------------------------------
     def user_reels(self, user_id, amount=12):
         url = f"https://i.instagram.com/api/v1/clips/user/{user_id}/?count={amount}"
         res = self.session.get(url)
@@ -157,9 +137,6 @@ class PrivateAPI:
 
         return res.json().get("items", [])
 
-    # -------------------------------
-    #  Small helpers
-    # -------------------------------
     def media_url(self, item):
         if "video_versions" in item:
             return item["video_versions"][0]["url"]
@@ -207,5 +184,4 @@ class PrivateAPI:
         return res.json().get("tray", [])
 
 
-# GLOBAL API
 private = PrivateAPI()
