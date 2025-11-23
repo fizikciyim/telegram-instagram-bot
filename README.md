@@ -32,6 +32,26 @@ root/
 
 ---
 
+## 📸 Ekran Görüntüleri
+
+<div align="center">
+
+<table>
+  <tr>
+    <td><img src="./screenshots/1.jpeg" width="250" style="border-radius:12px;"/></td>
+    <td><img src="./screenshots/2.jpeg" width="250" style="border-radius:12px;"/></td>
+    <td><img src="./screenshots/3.jpeg" width="250" style="border-radius:12px;"/></td>
+  </tr>
+  <tr>
+    <td><img src="./screenshots/4.jpeg" width="250" style="border-radius:12px;"/></td>
+    <td><img src="./screenshots/5.jpeg" width="250" style="border-radius:12px;"/></td>
+  </tr>
+</table>
+
+</div>
+
+---
+
 ## ⚙️ Kurulum
 
 ### 1. Gerekli paketleri yükle
