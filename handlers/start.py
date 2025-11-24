@@ -37,7 +37,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
         "👋 *Hoş geldin!*\n\n"
         "📱 *Instagram içerik görüntüleme botuna hoş geldin!*\n\n"
-        "⚡ *Günlük 20 ücretsiz hak* ile şunları yapabilirsin:\n"
+        "⚡ *Günlük 10 ücretsiz hak* ile şunları yapabilirsin:\n"
         "• *Kullanıcı profili görüntüleme* hak yemez\n"
         "🔍 Başlamak için bir *Instagram kullanıcı adı* yazman yeterli!\n\n"
     )

@@ -17,5 +17,5 @@ logs/
 
 # Virtual environment (varsa)
 venv/
-
+package/
 downloads/

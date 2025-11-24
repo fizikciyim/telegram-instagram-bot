@@ -20,12 +20,24 @@ def check_and_update_limit(user_id: int):
     premium_until = user.get("premium_until")
 
     if is_premium and premium_until:
+
+        # premium_until -> sadece gün bilgisine çevir
         if isinstance(premium_until, datetime):
             premium_date = premium_until.date()
-        else:
+        else:   
             premium_date = premium_until
 
-        if premium_date >= today:
+        # --- Premium süresi bitmiş mi? ---
+        if premium_date < today:
+            cursor.execute(
+                "UPDATE users SET is_premium = 0, premium_until = NULL WHERE id = %s",
+                (user_id,)
+            )
+            conn.commit()
+            is_premium = False  # artık premium değil
+
+        # Premium hâlâ aktifse sınırsız kullanım
+        else:
             cursor.close()
             conn.close()
             return {
